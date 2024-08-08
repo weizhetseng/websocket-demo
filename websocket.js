@@ -1,7 +1,9 @@
 // websocket/index.js
 const WebSocket = require('ws')
 
-const wss = new WebSocket.Server({ noServer: true })
+const wss = new WebSocket.Server({ port: process.env.PORT || 8080 })
+
+console.log(wss)
 
 // 暫存訊息放置處
 const messages = []

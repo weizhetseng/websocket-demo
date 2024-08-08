@@ -10,7 +10,8 @@
     <button type="button" id="btn">送出</button>
 
     <script>
-      const ws = new WebSocket('wss://websocket-demo-w3ay.onrender.com')
+      const host = window.location.host
+      const ws = new WebSocket(`wss//${host}`)
 
       // Connection opened
       ws.addEventListener('open', (event) => {
