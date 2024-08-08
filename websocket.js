@@ -2,7 +2,8 @@
 const WebSocket = require('ws')
 
 const PORT = process.env.PORT || 8080
-const wss = new WebSocket.Server({ port: PORT })
+
+const wss = new WebSocket.Server({ noServer: true })
 
 // 暫存訊息放置處
 const messages = []
@@ -23,4 +24,16 @@ wss.on('connection', function connection(ws) {
 
   // 當連線時，將所有訊息傳送給連線的 client，所以算是初始化訊息
   ws.send(JSON.stringify(messages) || [])
+})
+
+const server = require('http').createServer()
+
+server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request)
+  })
+})
+
+server.listen(PORT, () => {
+  console.log(`WebSocket 伺服器正在監聽端口 ${PORT}`)
 })
