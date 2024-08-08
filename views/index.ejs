@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <div id="content"></div>
+    <input type="text" id="input" />
+    <button type="button" id="btn">送出</button>
+
+    <script>
+      const ws = new WebSocket('ws://localhost:8080')
+
+      // Connection opened
+      ws.addEventListener('open', (event) => {
+        // 初始化時，就發送一個訊息給後端，這邊先註解
+        // ws.send("Hello Server!");
+      })
+
+      // Listen for messages
+      ws.addEventListener('message', (event) => {
+        console.log('Message from server ', JSON.parse(event.data))
+        // 取得 #content 元素
+        const content = document.querySelector('#content')
+        // 將 WebSocket 傳來的資料轉成陣列，並且將每個元素包在 <p> 內
+        const data = JSON.parse(event.data)
+
+        // 將資料放入 #content 中
+        content.innerHTML = data
+          .map((text) => {
+            const data = JSON.parse(text)
+            return `<p>${data.type}: ${data.data}</p>`
+          })
+          .join('')
+      })
+
+      document.querySelector('#btn').addEventListener('click', () => {
+        // 取得 #input 元素的值
+        const value = document.querySelector('#input').value
+
+        const newData = {
+          type: 'customer',
+          data: value,
+        }
+        // 將資料送出
+        ws.send(JSON.stringify(newData))
+        // 清空 #input 元素的值
+        document.querySelector('#input').value = ''
+      })
+    </script>
+  </body>
+</html>
